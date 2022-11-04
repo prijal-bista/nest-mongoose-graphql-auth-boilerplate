@@ -1,4 +1,10 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnprocessableEntityException,
+} from '@nestjs/common';
+import { verifyHash } from 'src/utils/bcryptUtils';
+import { ChangePasswordInput } from './inputs/change-password.input';
 import { UserRepository } from './repositories/user.repository';
 import { User } from './schemas/user.schema';
 
@@ -25,5 +31,15 @@ export class UserService {
 
   findByEmail(email: string): Promise<User> {
     return this.userRepository.findByEmail(email);
+  }
+
+  async changePassword(user: User, changePasswordInput: ChangePasswordInput) {
+    const { currentPassword, newPassword } = changePasswordInput;
+
+    if (!(await verifyHash(currentPassword, user.password))) {
+      throw new UnprocessableEntityException('Password is invalid.');
+    }
+
+    return this.userRepository.updatePassword(user, newPassword);
   }
 }

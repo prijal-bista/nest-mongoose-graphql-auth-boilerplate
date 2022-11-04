@@ -23,4 +23,11 @@ export class UserRepository {
   findByEmail(email: string): Promise<User> {
     return this.userModel.findOne({ email }).exec();
   }
+
+  async updatePassword(userData: User, newPassword) {
+    const user = await this.userModel.findOne({ email: userData.email }).exec();
+    user.password = await hash(newPassword);
+    await user.save();
+    return user;
+  }
 }

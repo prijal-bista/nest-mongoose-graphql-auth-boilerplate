@@ -21,5 +21,5 @@ export class RegisterInput {
 
   @Field()
   @Match('password', { message: `Password doesnot match.` })
-  password_confirmation: string;
+  passwordConfirmation: string;
 }
