@@ -19,4 +19,10 @@ export class AuthResolver {
   login(@Args('loginInput') loginInput: LoginInput) {
     return this.authService.login(loginInput);
   }
+
+  @Mutation(() => UserType)
+  sendForgotPasswordEmail(@Args('email') email: string) {
+    //
+    return this.authService.sendForgotPasswordEmail(email);
+  }
 }

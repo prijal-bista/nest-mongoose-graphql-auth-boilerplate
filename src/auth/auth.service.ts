@@ -1,8 +1,14 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { MailService } from 'src/mail/mail.service';
 import { User } from 'src/user/schemas/user.schema';
 import { UserService } from 'src/user/user.service';
 import { verifyHash } from 'src/utils/bcryptUtils';
+import { generateRandomToken } from 'src/utils/cryptoUtils';
 import { LoginInput } from './inputs/login.input';
 import { RegisterInput } from './inputs/register.input';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
@@ -12,10 +18,14 @@ export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
+    private mailService: MailService,
   ) {}
 
-  register(registerInput: RegisterInput): Promise<User> {
-    return this.userService.createUser(registerInput);
+  async register(registerInput: RegisterInput): Promise<User> {
+    const user = await this.userService.createUser(registerInput);
+    const token = generateRandomToken(64);
+    await this.mailService.sendUserConfirmationEmail(user, token);
+    return user;
   }
 
   async login(
@@ -36,5 +46,15 @@ export class AuthService {
       user,
       accessToken,
     };
+  }
+
+  async sendForgotPasswordEmail(email: string): Promise<User> {
+    const user = await this.userService.findByEmail(email);
+    if (!user) {
+      throw new UnprocessableEntityException('Email doesnot exist.');
+    }
+    const token = generateRandomToken(64);
+    await this.mailService.sendForgotPasswordEmail(user, token);
+    return user;
   }
 }
