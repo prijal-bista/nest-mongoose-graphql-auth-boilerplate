@@ -3,6 +3,7 @@ import {
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { MailService } from 'src/mail/mail.service';
 import { User } from 'src/user/schemas/user.schema';
@@ -19,12 +20,26 @@ export class AuthService {
     private userService: UserService,
     private jwtService: JwtService,
     private mailService: MailService,
+    private configService: ConfigService,
   ) {}
+
+  async sendConfirmationEmail(user: User) {
+    const token = generateRandomToken(32);
+    const url = `${this.configService.get('FRONTEND_URL')}/${token}/verify`;
+
+    await this.mailService.sendMail({
+      to: user.email,
+      subject: `${this.configService.get(
+        'APP_NAME',
+      )} | Please Confirm Your Email`,
+      template: './forgot-password',
+      context: { name: user.name, url },
+    });
+  }
 
   async register(registerInput: RegisterInput): Promise<User> {
     const user = await this.userService.createUser(registerInput);
-    const token = generateRandomToken(64);
-    await this.mailService.sendUserConfirmationEmail(user, token);
+    await this.sendConfirmationEmail(user); // send confirm email verification
     return user;
   }
 
@@ -53,8 +68,17 @@ export class AuthService {
     if (!user) {
       throw new UnprocessableEntityException('Email doesnot exist.');
     }
-    const token = generateRandomToken(64);
-    await this.mailService.sendForgotPasswordEmail(user, token);
+
+    const token = generateRandomToken(32);
+    const url = `${this.configService.get('FRONTEND_URL')}/${token}/reset`;
+
+    await this.mailService.sendMail({
+      to: user.email,
+      subject: `${this.configService.get('APP_NAME')} | Reset Password`,
+      template: './forgot-password',
+      context: { name: user.name, url },
+    });
+
     return user;
   }
 }
