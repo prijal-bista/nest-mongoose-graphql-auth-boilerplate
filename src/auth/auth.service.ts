@@ -13,6 +13,7 @@ import { generateRandomToken } from 'src/utils/cryptoUtils';
 import { ConfirmEmailInput } from './inputs/confirm-email.input';
 import { LoginInput } from './inputs/login.input';
 import { RegisterInput } from './inputs/register.input';
+import { ResendEmailVerificationInput } from './inputs/resend-email-verification.input';
 import { ResetPasswordInput } from './inputs/reset-password.input';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { EmailVerificationRepository } from './repositories/email-verificatoin.repository';
@@ -58,6 +59,10 @@ export class AuthService {
 
     if (!user || !(await verifyHash(password, user.password))) {
       throw new UnauthorizedException('Invalid credentials.');
+    }
+
+    if (user.emailVerifiedAt == null) {
+      throw new UnauthorizedException('Email Not Verified.');
     }
 
     // generate accessToken with jwt
@@ -113,5 +118,17 @@ export class AuthService {
       throw new UnauthorizedException('Token is either invalid or expired');
     }
     return this.userService.resetPassword(forgotPassword.email, newPassword);
+  }
+
+  async resendConfirmationEmail(
+    resendVerificationEmailInput: ResendEmailVerificationInput,
+  ) {
+    const { email } = resendVerificationEmailInput;
+    const user = await this.userService.findByEmail(email);
+    if (!user) {
+      throw new UnauthorizedException('User with email doesnot exists.');
+    }
+    await this.sendConfirmationEmail(user);
+    return user;
   }
 }

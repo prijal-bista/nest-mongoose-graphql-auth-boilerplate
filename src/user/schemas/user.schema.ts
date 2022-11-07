@@ -17,7 +17,7 @@ export class User {
   @Prop([String])
   roles: string[];
 
-  @Prop()
+  @Prop(Date)
   emailVerifiedAt: Date;
 }
 

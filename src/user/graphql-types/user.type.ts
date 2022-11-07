@@ -10,4 +10,7 @@ export class UserType {
 
   @Field(() => [String])
   roles: string[];
+
+  @Field(() => Date, { nullable: true })
+  emailVerifiedAt: Date | null;
 }

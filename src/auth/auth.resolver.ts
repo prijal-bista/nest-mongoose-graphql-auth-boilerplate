@@ -7,6 +7,7 @@ import { LoginResponseType } from './graphql-types/login-response.type';
 import { UserType } from 'src/user/graphql-types/user.type';
 import { ConfirmEmailInput } from './inputs/confirm-email.input';
 import { ResetPasswordInput } from './inputs/reset-password.input';
+import { ResendEmailVerificationInput } from './inputs/resend-email-verification.input';
 
 @Resolver(() => UserType)
 export class AuthResolver {
@@ -39,5 +40,15 @@ export class AuthResolver {
     @Args('resetPasswordInput') resetPasswordInput: ResetPasswordInput,
   ) {
     return this.authService.resetPassword(resetPasswordInput);
+  }
+
+  @Mutation(() => UserType)
+  async resendVerificationEmail(
+    @Args('resendVerificationEmailInput')
+    resendVerificationEmailInput: ResendEmailVerificationInput,
+  ) {
+    return await this.authService.resendConfirmationEmail(
+      resendVerificationEmailInput,
+    );
   }
 }
