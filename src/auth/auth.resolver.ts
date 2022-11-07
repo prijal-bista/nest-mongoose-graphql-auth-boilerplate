@@ -9,6 +9,7 @@ import { ConfirmEmailInput } from './inputs/confirm-email.input';
 import { ResetPasswordInput } from './inputs/reset-password.input';
 import { ResendEmailVerificationInput } from './inputs/resend-email-verification.input';
 import { GeneralResponseType } from './graphql-types/general-response.type';
+import { ForgotPasswordInput } from './inputs/forgot-password.input';
 
 @Resolver(() => UserType)
 export class AuthResolver {
@@ -25,7 +26,10 @@ export class AuthResolver {
   }
 
   @Mutation(() => GeneralResponseType)
-  async sendForgotPasswordEmail(@Args('email') email: string) {
+  async sendForgotPasswordEmail(
+    @Args('forgotPasswordInput') forgotPasswordInput: ForgotPasswordInput,
+  ) {
+    const { email } = forgotPasswordInput;
     this.authService.sendForgotPasswordEmail(email);
     return { message: `Reset password email has been sent to ${email}.` };
   }
