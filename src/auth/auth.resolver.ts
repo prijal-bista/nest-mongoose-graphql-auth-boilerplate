@@ -8,16 +8,19 @@ import { UserType } from 'src/user/graphql-types/user.type';
 import { ConfirmEmailInput } from './inputs/confirm-email.input';
 import { ResetPasswordInput } from './inputs/reset-password.input';
 import { ResendEmailVerificationInput } from './inputs/resend-email-verification.input';
-import { GeneralResponseType } from './graphql-types/general-response.type';
+import { GeneralResponseType } from '../graphql-types/general-response.type';
 import { ForgotPasswordInput } from './inputs/forgot-password.input';
 
 @Resolver(() => UserType)
 export class AuthResolver {
   constructor(private authService: AuthService) {}
 
-  @Mutation(() => UserType)
-  register(@Args('registerInput') registerInput: RegisterInput) {
-    return this.authService.register(registerInput);
+  @Mutation(() => GeneralResponseType)
+  async register(@Args('registerInput') registerInput: RegisterInput) {
+    await this.authService.register(registerInput);
+    return {
+      message: `User registerd successfully. Email has been sent for verification.`,
+    };
   }
 
   @Mutation(() => LoginResponseType)
