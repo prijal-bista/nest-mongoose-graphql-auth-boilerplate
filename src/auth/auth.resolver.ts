@@ -8,6 +8,7 @@ import { UserType } from 'src/user/graphql-types/user.type';
 import { ConfirmEmailInput } from './inputs/confirm-email.input';
 import { ResetPasswordInput } from './inputs/reset-password.input';
 import { ResendEmailVerificationInput } from './inputs/resend-email-verification.input';
+import { GeneralResponseType } from './graphql-types/general-response.type';
 
 @Resolver(() => UserType)
 export class AuthResolver {
@@ -23,32 +24,38 @@ export class AuthResolver {
     return this.authService.login(loginInput);
   }
 
-  @Mutation(() => UserType)
-  sendForgotPasswordEmail(@Args('email') email: string) {
-    return this.authService.sendForgotPasswordEmail(email);
+  @Mutation(() => GeneralResponseType)
+  async sendForgotPasswordEmail(@Args('email') email: string) {
+    this.authService.sendForgotPasswordEmail(email);
+    return { message: `Reset password email has been sent to ${email}.` };
   }
 
-  @Mutation(() => UserType)
-  confirmEmail(
+  @Mutation(() => GeneralResponseType)
+  async confirmEmail(
     @Args('confirmEmailInput') confirmEmailInput: ConfirmEmailInput,
   ) {
-    return this.authService.confirmEmail(confirmEmailInput);
+    await this.authService.confirmEmail(confirmEmailInput);
+    return { message: `Email has been verified successfully` };
   }
 
-  @Mutation(() => UserType)
-  resetPassword(
+  @Mutation(() => GeneralResponseType)
+  async resetPassword(
     @Args('resetPasswordInput') resetPasswordInput: ResetPasswordInput,
   ) {
-    return this.authService.resetPassword(resetPasswordInput);
+    await this.authService.resetPassword(resetPasswordInput);
+    return { message: `Password reset successful` };
   }
 
-  @Mutation(() => UserType)
+  @Mutation(() => GeneralResponseType)
   async resendVerificationEmail(
     @Args('resendVerificationEmailInput')
     resendVerificationEmailInput: ResendEmailVerificationInput,
   ) {
-    return await this.authService.resendConfirmationEmail(
+    await this.authService.resendConfirmationEmail(
       resendVerificationEmailInput,
     );
+    return {
+      message: `Verificaiton email has been sent to ${resendVerificationEmailInput.email}`,
+    };
   }
 }
