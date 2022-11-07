@@ -24,12 +24,19 @@ export class ForgotPasswordRepository {
     return forgotPassword.save();
   }
 
-  findByToken(token: string) {
-    return this.forgotPasswordModel.findOne({
-      token,
-      timestamp: {
-        $gt: new Date(new Date().getTime() - 1000 * 60 * 10),
-      },
-    });
+  findByToken(token: string): Promise<ForgotPasswordDocument> {
+    return this.forgotPasswordModel
+      .findOne({
+        token,
+        timestamp: {
+          $gt: new Date(new Date().getTime() - 1000 * 60 * 10),
+        },
+      })
+      .exec();
+  }
+
+  async deleteByToken(token: string): Promise<void> {
+    const result = await this.forgotPasswordModel.deleteOne({ token });
+    console.log(result);
   }
 }

@@ -103,9 +103,12 @@ export class AuthService {
     if (!emailVerification) {
       throw new BadRequestException('Token is either invalid or expired');
     }
-    return await this.userService.makeUserEmailVerified(
+    const result = this.userService.makeUserEmailVerified(
       emailVerification.email,
     );
+    await this.emailVerificationRepository.deleteByToken(token);
+
+    return result;
   }
 
   async resetPassword(resetPasswordInput: ResetPasswordInput): Promise<User> {
@@ -117,7 +120,12 @@ export class AuthService {
     if (!forgotPassword) {
       throw new BadRequestException('Token is either invalid or expired');
     }
-    return this.userService.resetPassword(forgotPassword.email, newPassword);
+    const result = this.userService.resetPassword(
+      forgotPassword.email,
+      newPassword,
+    );
+    await this.forgotPasswordRepository.deleteByToken(token);
+    return result;
   }
 
   async resendConfirmationEmail(
@@ -130,7 +138,7 @@ export class AuthService {
     }
 
     if (user.emailVerifiedAt) {
-      throw new BadRequestException('User already verified');
+      throw new BadRequestException('User is already verified');
     }
 
     await this.sendConfirmationEmail(user);

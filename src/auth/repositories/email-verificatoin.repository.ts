@@ -24,12 +24,18 @@ export class EmailVerificationRepository {
     return emailVerification.save();
   }
 
-  findByToken(token: string) {
-    return this.emailVerificationModel.findOne({
-      token,
-      timestamp: {
-        $gt: new Date(new Date().getTime() - 1000 * 60 * 10),
-      },
-    });
+  findByToken(token: string): Promise<EmailVerificationDocument> {
+    return this.emailVerificationModel
+      .findOne({
+        token,
+        timestamp: {
+          $gt: new Date(new Date().getTime() - 1000 * 60 * 10),
+        },
+      })
+      .exec();
+  }
+
+  async deleteByToken(token: string): Promise<void> {
+    await this.emailVerificationModel.deleteOne({ token });
   }
 }
