@@ -10,6 +10,8 @@ import { ResetPasswordInput } from './inputs/reset-password.input';
 import { ResendEmailVerificationInput } from './inputs/resend-email-verification.input';
 import { GeneralResponseType } from '../graphql-types/general-response.type';
 import { ForgotPasswordInput } from './inputs/forgot-password.input';
+import { UseGuards } from '@nestjs/common';
+import { GqlThrottlerGuard } from 'src/guards/gql-throttler.guard';
 
 @Resolver(() => UserType)
 export class AuthResolver {
@@ -29,6 +31,7 @@ export class AuthResolver {
   }
 
   @Mutation(() => GeneralResponseType)
+  @UseGuards(GqlThrottlerGuard)
   async sendForgotPasswordEmail(
     @Args('forgotPasswordInput') forgotPasswordInput: ForgotPasswordInput,
   ) {
@@ -54,6 +57,7 @@ export class AuthResolver {
   }
 
   @Mutation(() => GeneralResponseType)
+  @UseGuards(GqlThrottlerGuard)
   async resendVerificationEmail(
     @Args('resendVerificationEmailInput')
     resendVerificationEmailInput: ResendEmailVerificationInput,

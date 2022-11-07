@@ -30,4 +30,8 @@ export const envValidationSchema = Joi.object({
   QUEUE_CONNECTION: Joi.string().required().valid('sync', 'redis'),
   QUEUE_REDIS_HOST: Joi.string().required(),
   QUEUE_REDIS_PORT: Joi.number().required(),
+
+  // Throttling related env
+  THROTTLE_TTL: Joi.number().default(60),
+  THROTTLE_LIMIT: Joi.number().default(10),
 });

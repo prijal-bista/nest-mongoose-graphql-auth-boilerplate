@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { envValidationSchema } from './config/env-validation.schema';
 import { MailModule } from './mail/mail.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -24,6 +25,16 @@ import { MailModule } from './mail/mail.module';
     GraphQLModule.forRoot({
       autoSchemaFile: true,
       driver: ApolloDriver,
+    }),
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => {
+        return {
+          ttl: configService.get('THROTTLE_TTL'),
+          limit: configService.get('THROTTLE_LIMIT'),
+        };
+      },
     }),
     UserModule,
     AuthModule,
