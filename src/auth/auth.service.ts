@@ -13,6 +13,8 @@ import { generateRandomToken } from 'src/utils/cryptoUtils';
 import { LoginInput } from './inputs/login.input';
 import { RegisterInput } from './inputs/register.input';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { EmailVerificationRepository } from './repositories/email-verificatoin.repository';
+import { ForgotPasswordRepository } from './repositories/forgot-password.respository';
 
 @Injectable()
 export class AuthService {
@@ -21,10 +23,13 @@ export class AuthService {
     private jwtService: JwtService,
     private mailService: MailService,
     private configService: ConfigService,
+    private emailVerificationRepository: EmailVerificationRepository,
+    private forgotPasswordRepository: ForgotPasswordRepository,
   ) {}
 
   async sendConfirmationEmail(user: User) {
     const token = generateRandomToken(32);
+    await this.emailVerificationRepository.create(user.email, token);
     const url = `${this.configService.get('FRONTEND_URL')}/${token}/verify`;
 
     await this.mailService.sendMail({
@@ -70,6 +75,7 @@ export class AuthService {
     }
 
     const token = generateRandomToken(32);
+    await this.forgotPasswordRepository.create(user.email, token);
     const url = `${this.configService.get('FRONTEND_URL')}/${token}/reset`;
 
     await this.mailService.sendMail({
