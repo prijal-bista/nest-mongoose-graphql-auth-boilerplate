@@ -23,4 +23,13 @@ export class ForgotPasswordRepository {
     const forgotPassword = new this.forgotPasswordModel(data);
     return forgotPassword.save();
   }
+
+  findByToken(token: string) {
+    return this.forgotPasswordModel.findOne({
+      token,
+      timestamp: {
+        $gt: new Date(new Date().getTime() - 1000 * 60 * 10),
+      },
+    });
+  }
 }

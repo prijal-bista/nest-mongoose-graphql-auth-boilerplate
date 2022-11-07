@@ -43,6 +43,11 @@ export class UserService {
     return this.userRepository.updatePassword(user, newPassword);
   }
 
+  async resetPassword(email: string, newPassword: string): Promise<User> {
+    const user = await this.userRepository.findByEmail(email);
+    return this.userRepository.updatePassword(user, newPassword);
+  }
+
   makeUserEmailVerified(email: string): Promise<User> {
     return this.userRepository.makeUserEmailVerified(email);
   }

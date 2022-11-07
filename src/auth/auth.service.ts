@@ -13,6 +13,7 @@ import { generateRandomToken } from 'src/utils/cryptoUtils';
 import { ConfirmEmailInput } from './inputs/confirm-email.input';
 import { LoginInput } from './inputs/login.input';
 import { RegisterInput } from './inputs/register.input';
+import { ResetPasswordInput } from './inputs/reset-password.input';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { EmailVerificationRepository } from './repositories/email-verificatoin.repository';
 import { ForgotPasswordRepository } from './repositories/forgot-password.respository';
@@ -100,5 +101,17 @@ export class AuthService {
     return await this.userService.makeUserEmailVerified(
       emailVerification.email,
     );
+  }
+
+  async resetPassword(resetPasswordInput: ResetPasswordInput): Promise<User> {
+    const { token, newPassword } = resetPasswordInput;
+    const forgotPassword = await this.forgotPasswordRepository.findByToken(
+      token,
+    );
+
+    if (!forgotPassword) {
+      throw new UnauthorizedException('Token is either invalid or expired');
+    }
+    return this.userService.resetPassword(forgotPassword.email, newPassword);
   }
 }
