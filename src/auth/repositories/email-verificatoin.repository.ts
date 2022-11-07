@@ -23,4 +23,13 @@ export class EmailVerificationRepository {
     const emailVerification = new this.emailVerificationModel(data);
     return emailVerification.save();
   }
+
+  findByToken(token: string) {
+    return this.emailVerificationModel.findOne({
+      token,
+      timestamp: {
+        $gt: new Date(new Date().getTime() - 1000 * 60 * 10),
+      },
+    });
+  }
 }

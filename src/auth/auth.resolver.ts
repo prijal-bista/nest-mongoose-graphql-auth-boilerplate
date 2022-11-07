@@ -5,6 +5,7 @@ import { LoginInput } from './inputs/login.input';
 import { RegisterInput } from './inputs/register.input';
 import { LoginResponseType } from './graphql-types/login-response.type';
 import { UserType } from 'src/user/graphql-types/user.type';
+import { ConfirmEmailInput } from './inputs/confirm-email.input';
 
 @Resolver(() => UserType)
 export class AuthResolver {
@@ -22,7 +23,13 @@ export class AuthResolver {
 
   @Mutation(() => UserType)
   sendForgotPasswordEmail(@Args('email') email: string) {
-    //
     return this.authService.sendForgotPasswordEmail(email);
+  }
+
+  @Mutation(() => UserType)
+  confirmEmail(
+    @Args('confirmEmailInput') confirmEmailInput: ConfirmEmailInput,
+  ) {
+    return this.authService.confirmEmail(confirmEmailInput);
   }
 }

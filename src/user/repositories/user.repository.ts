@@ -20,13 +20,20 @@ export class UserRepository {
     return data.save();
   }
 
-  findByEmail(email: string): Promise<User> {
+  findByEmail(email: string): Promise<UserDocument> {
     return this.userModel.findOne({ email }).exec();
   }
 
-  async updatePassword(userData: User, newPassword) {
+  async updatePassword(userData: User, newPassword: string) {
     const user = await this.userModel.findOne({ email: userData.email }).exec();
     user.password = await hash(newPassword);
+    await user.save();
+    return user;
+  }
+
+  async makeUserEmailVerified(email: string): Promise<User> {
+    const user = await this.findByEmail(email);
+    user.emailVerifiedAt = new Date();
     await user.save();
     return user;
   }

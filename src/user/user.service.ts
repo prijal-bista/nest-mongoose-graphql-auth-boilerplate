@@ -42,4 +42,8 @@ export class UserService {
 
     return this.userRepository.updatePassword(user, newPassword);
   }
+
+  makeUserEmailVerified(email: string): Promise<User> {
+    return this.userRepository.makeUserEmailVerified(email);
+  }
 }

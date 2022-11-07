@@ -10,6 +10,7 @@ import { User } from 'src/user/schemas/user.schema';
 import { UserService } from 'src/user/user.service';
 import { verifyHash } from 'src/utils/bcryptUtils';
 import { generateRandomToken } from 'src/utils/cryptoUtils';
+import { ConfirmEmailInput } from './inputs/confirm-email.input';
 import { LoginInput } from './inputs/login.input';
 import { RegisterInput } from './inputs/register.input';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
@@ -86,5 +87,18 @@ export class AuthService {
     });
 
     return user;
+  }
+
+  async confirmEmail(confirmEmailInput: ConfirmEmailInput): Promise<User> {
+    const { token } = confirmEmailInput;
+    const emailVerification =
+      await this.emailVerificationRepository.findByToken(token);
+
+    if (!emailVerification) {
+      throw new UnauthorizedException('Token is either invalid or expired');
+    }
+    return await this.userService.makeUserEmailVerified(
+      emailVerification.email,
+    );
   }
 }
