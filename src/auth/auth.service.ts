@@ -1,7 +1,7 @@
 import {
+  BadRequestException,
   Injectable,
   UnauthorizedException,
-  UnprocessableEntityException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -58,7 +58,7 @@ export class AuthService {
     const user = await this.userService.findByEmail(email);
 
     if (!user || !(await verifyHash(password, user.password))) {
-      throw new UnauthorizedException('Invalid credentials.');
+      throw new BadRequestException('Invalid credentials.');
     }
 
     if (user.emailVerifiedAt == null) {
@@ -78,7 +78,7 @@ export class AuthService {
   async sendForgotPasswordEmail(email: string): Promise<User> {
     const user = await this.userService.findByEmail(email);
     if (!user) {
-      throw new UnprocessableEntityException('Email doesnot exist.');
+      throw new BadRequestException('User with this email doesnot exist.');
     }
 
     const token = generateRandomToken(32);
@@ -101,7 +101,7 @@ export class AuthService {
       await this.emailVerificationRepository.findByToken(token);
 
     if (!emailVerification) {
-      throw new UnauthorizedException('Token is either invalid or expired');
+      throw new BadRequestException('Token is either invalid or expired');
     }
     return await this.userService.makeUserEmailVerified(
       emailVerification.email,
@@ -115,7 +115,7 @@ export class AuthService {
     );
 
     if (!forgotPassword) {
-      throw new UnauthorizedException('Token is either invalid or expired');
+      throw new BadRequestException('Token is either invalid or expired');
     }
     return this.userService.resetPassword(forgotPassword.email, newPassword);
   }
@@ -126,8 +126,13 @@ export class AuthService {
     const { email } = resendVerificationEmailInput;
     const user = await this.userService.findByEmail(email);
     if (!user) {
-      throw new UnauthorizedException('User with email doesnot exists.');
+      throw new BadRequestException('User with this email doesnot exists.');
     }
+
+    if (user.emailVerifiedAt) {
+      throw new BadRequestException('User already verified');
+    }
+
     await this.sendConfirmationEmail(user);
     return user;
   }
