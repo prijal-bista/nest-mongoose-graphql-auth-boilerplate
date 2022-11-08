@@ -1,7 +1,7 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { GetUser } from 'src/decorators/get-user.decorator';
-import { GeneralResponseType } from 'src/graphql-types/general-response.type';
+import { GetUser } from 'src/common/decorators/get-user.decorator';
+import { GeneralResponseType } from 'src/common/graphql-types/general-response.type';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserType } from './graphql-types/user.type';
 import { ChangePasswordInput } from './inputs/change-password.input';

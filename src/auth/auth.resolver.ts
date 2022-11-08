@@ -8,10 +8,10 @@ import { UserType } from 'src/user/graphql-types/user.type';
 import { ConfirmEmailInput } from './inputs/confirm-email.input';
 import { ResetPasswordInput } from './inputs/reset-password.input';
 import { ResendEmailVerificationInput } from './inputs/resend-email-verification.input';
-import { GeneralResponseType } from '../graphql-types/general-response.type';
+import { GeneralResponseType } from '../common/graphql-types/general-response.type';
 import { ForgotPasswordInput } from './inputs/forgot-password.input';
 import { UseGuards } from '@nestjs/common';
-import { GqlThrottlerGuard } from 'src/guards/gql-throttler.guard';
+import { GqlThrottlerGuard } from 'src/common/guards/gql-throttler.guard';
 
 @Resolver(() => UserType)
 export class AuthResolver {

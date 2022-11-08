@@ -1,6 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { MinLength, IsEmail, Matches } from 'class-validator';
-import { Match } from 'src/decorators/match.decorator';
+import { Match } from 'src/common/decorators/match.decorator';
 
 @InputType()
 export class RegisterInput {

@@ -49,7 +49,7 @@ Setup:
    npm install
 ```
 
-3. Copy `.env.example` to `.env` and set all the required values. The required and optional values for `.env` are determined from `src/config/env-validation.schema.ts` file.
+3. Copy `.env.example` to `.env` and set all the required values. The required and optional values for `.env` are determined from `src/common/config/env-validation.schema.ts` file.
 
 4. Start server
 

@@ -3,7 +3,7 @@ import {
   Injectable,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { verifyHash } from 'src/utils/bcryptUtils';
+import { verifyHash } from 'src/common/utils/bcryptUtils';
 import { ChangePasswordInput } from './inputs/change-password.input';
 import { UserRepository } from './repositories/user.repository';
 import { User } from './schemas/user.schema';
